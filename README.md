@@ -38,10 +38,20 @@ NLP_Project/
 └── LICENSE                       # MIT License
 ```
 
-### ⚠️ Important for Kaggle Users
-Kaggle kernels often provide only one CPU core visible to `pandarallel`. You may need to refactor the preprocessing notebooks:
-1.  Comment out `pandarallel` imports and initialization.
-2.  Replace all `.parallel_apply()` calls with the standard `.apply()`.
+### ⚠️ Technical Note: Parallel CPU Processing & Memory Management
+
+To achieve efficient processing without GPUs for the traditional tracks, we utilized **`pandarallel`**, which enables parallel processing on CPUs.
+
+*   **Parallelism Strategy**:
+    *   We run independent parallel workers (cores).
+    *   **Function Self-Containment**: You will notice that libraries (e.g., `stanza`, `ISRIStemmer`) and regex patterns are **re-imported/re-defined inside the processing functions**. This is intentional. It ensures that each child process has its own independent instance of the dependencies and data, avoiding race conditions and serialization issues common in Python's multiprocessing.
+    *   **Memory (RAM) Constraints**: Some notebooks explicitly reduce the number of workers (e.g., `n_workers = 3`) instead of using all available cores. This is a strategic decision to prevent RAM saturation when loading large language models (like Stanza) for each worker simultaneously.
+
+### 📘 Educational Structure
+Each preprocessing notebook (`*_preprocessing.ipynb`) is structured as a guided tutorial:
+*   **Step-by-Step Cells**: Every processing stage (Cleaning, Tokenization, POS Tagging) is isolated in its own cell.
+*   **Statistical Foundation**: metrics and timing are printed for each step to justify the approach and show the computational cost of each linguistic feature.
+*   **Beginner Friendly**: The code demonstrates how to set up parallel NLP pipelines from scratch.
 
 ---
 
