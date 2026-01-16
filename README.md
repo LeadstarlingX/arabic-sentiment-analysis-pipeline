@@ -1,10 +1,25 @@
-# Arabic Sentiment Analysis NLP Project
+# Comprehensive Arabic Sentiment Analysis: From Morphology to Transformers
 
-This project explores various Natural Language Processing (NLP) techniques to classify Arabic sentiment reviews. It implements multiple preprocessing and modeling tracks, comparing Sequential, Parallel, Gensim (Word2Vec/FastText), POS-tagging, and BERT-based approaches.
+**A full-scale NLP pipeline for sentiment classification on 300K Arabic reviews.**  
+This project benchmarks the effectiveness of classical preprocessing techniques (morphological analysis, POS tagging, NER) against a range of models—from traditional classifiers (LR, KNN) to transformer-based BERT.
 
-## 📂 Project Structure
+**Dataset Sources**:  
+[Kaggle: 330k Arabic Sentiment Reviews](https://www.kaggle.com/datasets/abdallaellaithy/330k-arabic-sentiment-reviews)
 
-The project is organized into three main directories to separate code, data, and artifacts.
+---
+
+## 🚀 Key Features & Scientific Contributions
+
+*   **Large-Scale Analysis**: Processes and evaluates 300,000+ Arabic reviews across multiple domains.
+*   **Preprocessing Benchmark**: Systematically measures the impact of advanced linguistic preprocessing (Morphological analysis, POS tagging, NER) on final model performance.
+*   **Efficiency vs. Performance**: Demonstrates that **training on a subset (10k records) using CPU-efficient traditional models yields comparable results (~89% Accuracy/F1)** to full-dataset training with BERT on GPU.
+*   **Modular Pipeline**: Code is structured into parallel experimental tracks, separating data preparation, training, and evaluation.
+
+---
+
+## 📂 Repository Structure & Workflow
+
+The project follows a **Parallel Experimentation** workflow. Each track operates independently to isolate the effects of specific preprocessing techniques.
 
 ```text
 NLP_Project/
@@ -18,63 +33,93 @@ NLP_Project/
 │   └── *.pt                      # BERT embeddings
 ├── notebooks/                    # Jupyter Notebooks
 │   ├── preprocessing/            # Data cleaning & feature extraction
-│   └── modeling/                 # Model training & evaluation
+│   └── modeling/                 # Model training & evaluation (Model_*.ipynb)
 ├── README.md                     # Project documentation
-└── .gitignore                    # Git configuration
+└── LICENSE                       # MIT License
 ```
 
-## 🚀 Workflow & Pipelines
+### ⚠️ Important for Kaggle Users
+Kaggle kernels often provide only one CPU core visible to `pandarallel`. You may need to refactor the preprocessing notebooks:
+1.  Comment out `pandarallel` imports and initialization.
+2.  Replace all `.parallel_apply()` calls with the standard `.apply()`.
 
-This project uses a **Parallel Experimentation** workflow. Each track operates independently, typically starting from the raw dataset.
+---
 
-### 1. Sequential Track
-*   **Goal**: Baseline preprocessing and modeling.
-*   **Notebooks**:
-    *   `preprocessing/Sequential_Processing.ipynb`: Cleans raw text, filters English content.
-    *   `modeling/Sequential_Model.ipynb`: Trains simple classifiers (KNN, SVM, LR) on TF-IDF features.
+## 🧪 Methodology & Pipelines
 
-### 2. Gensim (Embeddings) Track
-*   **Goal**: Utilize word embeddings (Word2Vec, FastText) for feature representation.
-*   **Notebooks**:
-    *   `preprocessing/Gensim_PreProcessing.ipynb`: Trains custom W2V/FastText models on the corpus.
-    *   `modeling/Gensim_model.ipynb`: Uses averaged embeddings for classification.
+### 1. Dataset
+*   **Size**: Total 330,000 reviews; Sub-sampled to 10,000 for efficient CPU experimentation in traditional tracks.
+*   **Labels**: Binary sentiment (Positive/Negative).
 
-### 3. Part-of-Speech (POS) Track
-*   **Goal**: Enhance text features with grammatical tags using Stanza.
-*   **Notebooks**:
-    *   `preprocessing/POS_PreProcessing.ipynb`: Extracts POS tags.
-    *   `modeling/POS_Model.ipynb`: Uses POS tags + N-grams for classification.
+### 2. Experimental Tracks
 
-### 4. POS + NER (Named Entity Recognition) Track
-*   **Goal**: Further enhancement with Entity Recognition.
-*   **Notebooks**:
-    *   `preprocessing/POS_NER_Preprocessing.ipynb`: Extracts NER tags alongside POS.
-    *   `modeling/POS_NER_Model.ipynb`: Trains models using rich linguistic features.
+#### A. Sequential Track (Baseline)
+*   **Preprocessing**: `Sequential Processing.ipynb`
+    *   Basic cleaning, removal of diacritics, English content filtering.
+*   **Modeling**: `Sequential_Model.ipynb`
+    *   Trained Logistic Regression (LR), KNN, SVM.
+    *   **Result**: Establishes the baseline performance.
 
-### 5. BERT Track
-*   **Goal**: State-of-the-art Deep Learning approach.
-*   **Notebooks**:
-    *   `modeling/Bert_Model.ipynb`: Fine-tunes `aubmindlab/bert-base-arabertv02` for sentiment analysis.
+#### B. Gensim (Embeddings) Track
+*   **Preprocessing**: `Gensim_PreProcessing.ipynb`
+    *   Trains custom **Word2Vec** and **FastText** models on the corpus.
+    *   Generates averaged word embeddings content.
+*   **Modeling**: `Gensim_model.ipynb`
+    *   Uses embedding vectors as features for classification.
 
-## 🛠️ Setup & Usage
+#### C. POS (Part-of-Speech) Track
+*   **Preprocessing**: `POS_PreProcessing.ipynb`
+    *   Enriches text with **Stanza** POS tags.
+    *   Combines text stems with grammatical features.
+*   **Modeling**: `POS_Model.ipynb`
+    *   Evaluates if grammatical structure correlates with sentiment.
 
-1.  **Install Dependencies**:
-    Ensure you have `pandas`, `sklearn`, `gensim`, `stanza`, `torch`, `transformers`, and `pandarallel` installed.
-    ```bash
-    pip install pandas scikit-learn gensim stanza torch transformers pandarallel
-    ```
+#### D. POS + NER (Named Entity Recognition) Track
+*   **Preprocessing**: `POS_NER_Preprocessing.ipynb`
+    *   Extracts Named Entities (Person, Location, Organization) alongside POS tags.
+    *   Hypothesis: Entities might carry strong sentiment signals.
+*   **Modeling**: `POS_NER_Model.ipynb`
+    *   Uses rich linguistic features for training.
 
-2.  **Download Dataset**:
-    *   Place your `arabic_sentiment_reviews.csv` file into the `data/raw/` directory.
+#### E. BERT Track (State-of-the-Art)
+*   **Modeling**: `Bert_Model.ipynb`
+    *   Fine-tunes `aubmindlab/bert-base-arabertv02` on the dataset using GPU.
+    *   Generates deep contextual embeddings.
 
-3.  **Run Preprocessing**:
-    *   Open any bucket in `notebooks/preprocessing/` and run all cells.
-    *   This will generate processed CSVs in `data/processed/`.
+---
 
-4.  **Run Modeling**:
-    *   Open the corresponding notebook in `notebooks/modeling/`.
-    *   **Note**: Ensure the input path in `pd.read_csv()` points to the correct processed file in `data/processed/`.
+## 📊 Results & Findings
 
-## ⚠️ Notes
-*   **Large Files**: The `data/` and `models/` directories are excluded from version control via `.gitignore` to avoid repository bloat.
-*   **Stanza**: The Stanza pipelines usually require downloading language models on the first run.
+We compared the performance of traditional Machine Learning models (trained on 10k samples via CPU) against the heavy-weight BERT model (trained on GPU).
+
+| Track | Model | Accuracy | F1-Score | Training Resource |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sequential** | SVM / LR | **~89%** | **~89%** | CPU (Fast) |
+| **Gensim** | LR (FastText) | ~89% | ~89% | CPU |
+| **POS Tagging** | Logistic Regression | ~89% | ~89% | CPU |
+| **POS + NER** | Logistic Regression | ~89% | ~89% | CPU |
+| **BERT** | Arabert v02 | **~89-90%** | **~90%** | GPU (Heavy) |
+
+### Key Insights
+1.  **Efficiency Wins**: Traditional Morphological analysis and simple classifiers (Logistic Regression, SVM) achieved **~89% accuracy**, matching the performance of complex Transformer models for this specific binary classification task.
+2.  **Resource Usage**: We achieved these results training on only **10,000 records** on a standard CPU, proving that massive compute isn't always necessary for high-quality sentiment analysis.
+3.  **Feature Engineering**: The consistency of the results across tracks (Sequential vs. POS/NER) suggests that the core sentiment signal in Arabic reviews is robust and easily captured by diverse feature engineering approaches.
+
+---
+
+## 🛠️ How to Reproduce
+
+### Prerequisites
+*   Python 3.8+
+*   `pandas`, `scikit-learn`, `gensim`, `stanza`, `torch`, `transformers`, `pandarallel`
+
+### Steps
+1.  **Download Data**: Download the dataset from Kaggle and place `arabic_sentiment_reviews.csv` in `data/raw/`.
+2.  **Run Preprocessing**: Execute notebooks in `notebooks/preprocessing/` to generate the processed CSVs in `data/processed/`.
+3.  **Run Modeling**: Execute notebooks in `notebooks/modeling/` to train and evaluate models.
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
