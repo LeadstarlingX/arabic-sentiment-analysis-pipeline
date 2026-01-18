@@ -96,6 +96,11 @@ Each preprocessing notebook (`*_preprocessing.ipynb`) is structured as a guided 
     *   Fine-tunes `aubmindlab/bert-base-arabertv02` on the dataset using GPU.
     *   Generates deep contextual embeddings.
 
+#### F. BERT Partial Fine-Tuning (Final Best Model)
+*   **Modeling**: `Bert_Model_Partial_FineTune.ipynb`
+    *   **Approach**: Partial fine-tuning of `aubmindlab/bert-base-arabertv02` (last 2 layers + pooler) followed by Bi-Directional LSTM/RNN heads.
+    *   **Outcome**: Using the **full dataset**, this approach achieved the **best accuracy** and performance among all experiments, serving as the final output of this project.
+
 ---
 
 ## 📊 Results & Findings
@@ -108,10 +113,12 @@ We compared the performance of traditional Machine Learning models (trained on 1
 | **Gensim** | LR (FastText) | ~89% | ~89% | CPU |
 | **POS Tagging** | Logistic Regression | ~89% | ~89% | CPU |
 | **POS + NER** | Logistic Regression | ~89% | ~89% | CPU |
-| **BERT** | Arabert v02 | **~89-90%** | **~90%** | GPU (Heavy) |
+| **BERT** | Arabert v02 | ~90% | ~90% | GPU (Heavy) |
+| **BERT (Partial FT)** | **Bi-LSTM Head** | **Highest (Best)** | **Highest (Best)** | GPU (Optimized) |
 
 ### Key Insights
-1.  **Efficiency Wins**: Traditional Morphological analysis and simple classifiers (Logistic Regression, SVM) achieved **~89% accuracy**, matching the performance of complex Transformer models for this specific binary classification task.
+1.  **Best Performance**: The **BERT Partial Fine-Tuning** model with a Bi-LSTM head achieved the highest accuracy on the full dataset, outperforming all other approaches.
+2.  **Efficiency Wins**: Traditional Morphological analysis and simple classifiers (Logistic Regression, SVM) achieved **~89% accuracy**, matching the performance of standard Transformer implementations.
 2.  **Resource Usage**: We achieved these results training on only **10,000 records** on a standard CPU, proving that massive compute isn't always necessary for high-quality sentiment analysis.
 3.  **Feature Engineering**: The consistency of the results across tracks (Sequential vs. POS/NER) suggests that the core sentiment signal in Arabic reviews is robust and easily captured by diverse feature engineering approaches.
 
